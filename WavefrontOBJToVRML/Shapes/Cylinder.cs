@@ -7,10 +7,9 @@ namespace WavefrontOBJToVRML
     internal class Cylinder : IShape
     {
         public string AppearanceName { get; }
+        public Point Translation { get; }
+        public Rotation Rotation { get; }
 
-        readonly Point Center;
-        readonly Vector RotationVector;
-        readonly double Angle;
         readonly double Radius;
         readonly double Height;
 
@@ -18,7 +17,7 @@ namespace WavefrontOBJToVRML
         {
             AppearanceName = shapeData.AppearanceName;
 
-            Center = shapeData.Center;
+            Translation = shapeData.Center;
 
             int[] indices = new int[0];
             foreach (var face in shapeData.FaceIndices)
@@ -43,7 +42,7 @@ namespace WavefrontOBJToVRML
                 Radius = (circleCenter - points[indices[0]]).Length.Round();
             }
 
-            Vector centerVector = circleCenter - Center;
+            Vector centerVector = circleCenter - Translation;
             Height = (centerVector.Length * 2).Round();
 
             Vector baseVector = new Vector { Y = 1 };
@@ -62,8 +61,7 @@ namespace WavefrontOBJToVRML
                 rotationVector = invertedRotationVector;
             }
 
-            RotationVector = rotationVector;
-            Angle = angle.Round();
+            Rotation = new Rotation(rotationVector, angle.Round());
 
             int countNegative(Vector vector)
             {
@@ -71,27 +69,15 @@ namespace WavefrontOBJToVRML
             }
         }
 
-        public IEnumerable<string> Transform
-        {
-            get
-            {
-                List<string> lines = new List<string>();
-
-                lines.Add($"translation {Center.X} {Center.Y} {Center.Z}");
-
-                if (Angle != 0)
-                {
-                    lines.Add($"rotation {RotationVector.X} {RotationVector.Y} {RotationVector.Z} {Angle}");
-                }
-
-                return lines;
-            }
-        }
-
         public IEnumerable<string> Geometry
         {
             get
             {
+                if (Radius == 1 && Height == 2)
+                {
+                    return new string[] { "geometry Cylinder {}" };
+                }
+
                 List<string> lines = new List<string>();
                 lines.Add("geometry Cylinder {");
 

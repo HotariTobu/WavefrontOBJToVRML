@@ -5,8 +5,9 @@ namespace WavefrontOBJToVRML
     internal class Box : IShape
     {
         public string AppearanceName { get; }
+        public Point Translation { get; }
+        public Rotation Rotation { get; }
 
-        readonly Point Center;
         readonly Size Size;
 
         static readonly Size defaultSize = new Size
@@ -20,11 +21,9 @@ namespace WavefrontOBJToVRML
         {
             AppearanceName = shapeData.AppearanceName;
 
-            Center = shapeData.Center;
+            Translation = shapeData.Center;
             Size = shapeData.Size;
         }
-
-        public IEnumerable<string> Transform => new string[]{$"translation {Center.X} {Center.Y} {Center.Z}"};
 
         public IEnumerable<string> Geometry
         {

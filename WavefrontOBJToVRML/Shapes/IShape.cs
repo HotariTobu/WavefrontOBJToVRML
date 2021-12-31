@@ -5,7 +5,8 @@ namespace WavefrontOBJToVRML
     internal interface IShape
     {
         string AppearanceName { get; }
-        IEnumerable<string> Transform { get; }
+        Point Translation { get; }
+        Rotation Rotation { get; }
         IEnumerable<string> Geometry { get; }
     }
 }

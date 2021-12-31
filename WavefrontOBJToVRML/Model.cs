@@ -8,6 +8,8 @@ namespace WavefrontOBJToVRML
         readonly IEnumerable<Material> Materials;
         readonly IEnumerable<IShape> Children;
 
+        static readonly Point DefaultTranslation = new Point();
+
         public Model(string name, IEnumerable<Material> materials, IEnumerable<IShape> children)
         {
             Name = name;
@@ -15,7 +17,7 @@ namespace WavefrontOBJToVRML
             Children = children;
         }
 
-        public List<string> GetModelLines()
+        public IEnumerable<string> GetModelLines()
         {
             List<string> lines = new List<string>();
 
@@ -46,13 +48,21 @@ namespace WavefrontOBJToVRML
             return lines;
         }
 
-        public List<string> GetShapeLines(IShape shape)
+        public IEnumerable<string> GetShapeLines(IShape shape)
         {
             List<string> lines = new List<string>();
 
             lines.Add("Transform {");
 
-            lines.AddRange(shape.Transform.PrependEach("\t"));
+            if (!DefaultTranslation.Equals(shape.Translation))
+            {
+                lines.Add($"\ttranslation {shape.Translation.X} {shape.Translation.Y} {shape.Translation.Z}");
+            }
+
+            if (shape.Rotation.Angle != 0)
+            {
+                lines.Add($"\trotation {shape.Rotation.X} {shape.Rotation.Y} {shape.Rotation.Z} {shape.Rotation.Angle}");
+            }
 
             lines.Add("\tchildren [");
             lines.Add("\t\tShape {");
