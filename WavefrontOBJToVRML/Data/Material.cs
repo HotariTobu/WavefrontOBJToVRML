@@ -7,7 +7,7 @@ namespace WavefrontOBJToVRML
         //public string EmissiveColor;
         public string DiffuseColor;
         public string SpecularColor;
-        public string Transparency;
+        public double Transparency;
 
         string Name;
         
@@ -16,7 +16,7 @@ namespace WavefrontOBJToVRML
             Name = name;
         }
 
-        public List<string> GetMaterialLines()
+        public IEnumerable<string> GetMaterialLines()
         {
             List<string> lines = new List<string>();
 
@@ -27,7 +27,7 @@ namespace WavefrontOBJToVRML
             lines.Add($"\t\tdiffuseColor {DiffuseColor}");
             lines.Add($"\t\tspecularColor {SpecularColor}");
 
-            if (double.TryParse(Transparency, out double transparency) && transparency != 0)
+            if (Transparency != 0)
             {
                 lines.Add($"\t\ttransparency {Transparency}");
             }

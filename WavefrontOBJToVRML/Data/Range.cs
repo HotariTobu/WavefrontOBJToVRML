@@ -29,5 +29,7 @@
                 IsExpanded = true;
             }
         }
+
+        public override string ToString() => $"{Min} - {Max}";
     }
 }

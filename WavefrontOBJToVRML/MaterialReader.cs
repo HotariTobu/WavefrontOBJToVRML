@@ -44,7 +44,7 @@ namespace WavefrontOBJToVRML
                         {
                             if (double.TryParse(value, out double d))
                             {
-                                material.Transparency = (1 - d).ToString();
+                                material.Transparency = 1 - d;
                             }
                         }
                         break;

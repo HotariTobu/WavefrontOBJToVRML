@@ -6,18 +6,23 @@ namespace WavefrontOBJToVRML
 {
     internal partial class ShapeData
     {
-        public ShapeType Type { get; }
-        public int VertexIndex { get; }
         public string AppearanceName { get; set; } = "";
+        public int NextIndex => VertexIndex + _Points.Count;
 
-        public IEnumerable<Point> Points => _Points;
+        public IEnumerable<Vector> Points => _Points;
         public IEnumerable<int[]> FaceIndices => _FaceIndices;
 
-        readonly List<Point> _Points = new List<Point>();
+        public Vector Center => BoundingBox.Center;
+        public Size Size => BoundingBox.Size;
+
+        readonly Type Type;
+        readonly int VertexIndex;
+
+        readonly List<Vector> _Points = new List<Vector>();
         readonly List<int[]> _FaceIndices = new List<int[]>();
         readonly BoundingBox BoundingBox = new BoundingBox();
 
-        public ShapeData(ShapeType type, int vertexIndex)
+        public ShapeData(Type type, int vertexIndex)
         {
             Type = type;
             VertexIndex = vertexIndex;
@@ -25,7 +30,29 @@ namespace WavefrontOBJToVRML
 
         public void AddVertex(string value)
         {
-            Point point = new Point(value);
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException("value");
+            }
+
+            Vector point = default;
+
+            string[] tokens = value.Split(' ');
+
+            if (tokens.Length < 3)
+            {
+                point.X = 0;
+                point.Y = 0;
+                point.Z = 0;
+                return;
+            }
+            else
+            {
+                point.X = double.Parse(tokens[0]);
+                point.Y = double.Parse(tokens[1]);
+                point.Z = double.Parse(tokens[2]);
+            }
+
             _Points.Add(point);
             BoundingBox.Expand(point);
         }
@@ -43,18 +70,10 @@ namespace WavefrontOBJToVRML
                        .ToArray());
         }
 
-        public Point Center => new Point
+        public IShape CreateInstance()
         {
-            X = BoundingBox.Center.X.Round(),
-            Y = BoundingBox.Center.Y.Round(),
-            Z = BoundingBox.Center.Z.Round(),
-        };
-
-        public Size Size => new Size
-        {
-            Width = BoundingBox.Size.Width.Round(),
-            Height = BoundingBox.Size.Height.Round(),
-            Depth = BoundingBox.Size.Depth.Round(),
-        };
+            var constructor = Type.GetConstructor(new Type[] { typeof(ShapeData) });
+            return constructor?.Invoke(new object[] { this }) as IShape;
+        }
     }
 }

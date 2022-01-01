@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace WavefrontOBJToVRML
 {
@@ -16,7 +15,7 @@ namespace WavefrontOBJToVRML
 
             IEnumerable<Material> materials = new List<Material>();
             List<ShapeData> shapeData = new List<ShapeData>();
-            ShapeData shapeDatum = new ShapeData(ShapeType.PointSet, 1);
+            ShapeData shapeDatum = new ShapeData(typeof(PointSet), 1);
 
             foreach (string line in File.ReadAllLines(path))
             {
@@ -38,7 +37,7 @@ namespace WavefrontOBJToVRML
                         break;
 
                     case "o":
-                        shapeDatum = new ShapeData(GetShapeType(value), shapeDatum.VertexIndex + shapeDatum.Points.Count());
+                        shapeDatum = new ShapeData(ShapeNames.GetShapeType(value), shapeDatum.NextIndex);
                         shapeData.Add(shapeDatum);
                         break;
 
@@ -61,43 +60,14 @@ namespace WavefrontOBJToVRML
 
             foreach (var shapeDatum in shapeData)
             {
-                switch (shapeDatum.Type)
+                IShape shape = shapeDatum.CreateInstance();
+                if (shape != null)
                 {
-                    case ShapeType.Box:
-                        shapes.Add(new Box(shapeDatum));
-                        break;
-
-                    case ShapeType.Cylinder:
-                        shapes.Add(new Cylinder(shapeDatum));
-                        break;
-
-                    case ShapeType.PointSet:
-                        shapes.Add(new PointSet(shapeDatum));
-                        break;
+                    shapes.Add(shape);
                 }
             }
 
             return shapes;
-        }
-
-        static ShapeType GetShapeType(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return ShapeType.PointSet;
-            }
-
-            if (name.Contains("立方体"))
-            {
-                return ShapeType.Box;
-            }
-
-            if (name.Contains("円柱"))
-            {
-                return ShapeType.Cylinder;
-            }
-
-            return ShapeType.PointSet;
         }
     }
 }

@@ -5,10 +5,10 @@ namespace WavefrontOBJToVRML
     internal class PointSet: IShape
     {
         public string AppearanceName { get; }
-        public Point Translation { get; }
+        public Vector Translation { get; }
         public Rotation Rotation { get; }
 
-        readonly IEnumerable<Point> Points;
+        readonly IEnumerable<Vector> Points;
         readonly IEnumerable<int[]> FaceIndices;
 
         public PointSet(ShapeData shapeData)

@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace WavefrontOBJToVRML
 {
     internal class Box : IShape
     {
         public string AppearanceName { get; }
-        public Point Translation { get; }
+        public Vector Translation { get; }
         public Rotation Rotation { get; }
 
         readonly Size Size;
 
-        static readonly Size defaultSize = new Size
+        static readonly Size DefaultSize = new Size
         {
             Width = 2,
             Height = 2,
@@ -20,24 +21,94 @@ namespace WavefrontOBJToVRML
         public Box(ShapeData shapeData)
         {
             AppearanceName = shapeData.AppearanceName;
-
             Translation = shapeData.Center;
             Size = shapeData.Size;
+
+            Vector[] points = shapeData.Points.ToArray();
+            var vs = shapeData.FaceIndices
+                .Where(x => x.Length > 0)
+                .Select(indices =>
+                {
+                    Vector vector = default;
+                    foreach (var index in indices)
+                    {
+                        vector += points[index];
+                    }
+                    vector /= indices.Length;
+                    return vector - Translation;
+                });
+
+            if (vs.Any())
+            {
+                Vector vectorX = nearest(Vector.UnitX);
+                Vector vectorY = nearest(Vector.UnitY, vectorX);
+                Vector vectorZ = nearest(Vector.UnitZ, vectorX, vectorY);
+
+                Rotation = Rotation.GetRotation(vectorX, vectorY);
+
+                Size.Width = vectorX.Length * 2;
+                Size.Height = vectorY.Length * 2;
+                Size.Depth = vectorZ.Length * 2;
+
+                Vector nearest(Vector unit, params Vector[] excludeVectors)
+                {
+                    excludeVectors = excludeVectors.Concat(excludeVectors.Select(x => -x)).ToArray();
+
+                    var nearestVector = vs.First();
+
+                    int skipCount;
+                    for (skipCount = 1; isExcluded(nearestVector); skipCount++)
+                    {
+                        nearestVector = vs.ElementAt(skipCount);
+                    }
+
+                    double minDistance = unit.Distance(nearestVector);
+                    foreach (var vector in vs.Skip(skipCount))
+                    {
+                        if (isExcluded(vector))
+                        {
+                            continue;
+                        }
+
+                        double distance = unit.Distance(vector);
+                        if (distance < minDistance)
+                        {
+                            nearestVector = vector;
+                            minDistance = distance;
+                        }
+                    }
+                    return nearestVector;
+
+                    bool isExcluded(Vector vector)
+                    {
+                        foreach (var excludeVector in excludeVectors)
+                        {
+                            if (excludeVector.Equals(vector))
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+                }
+            }
         }
 
         public IEnumerable<string> Geometry
         {
             get
             {
-                List<string> lines = new List<string>();
-
-                if (defaultSize.Equals(Size))
+                Size size = Size.Round();
+                if (DefaultSize.Equals(size))
                 {
                     return new string[] { "geometry Box {}" };
                 }
 
+                List<string> lines = new List<string>();
+
                 lines.Add("geometry Box {");
-                lines.Add($"\tsize {Size.Width} {Size.Height} {Size.Depth}");
+                lines.Add($"\tsize {size.Width} {size.Height} {size.Depth}");
                 lines.Add("}");
 
                 return lines;

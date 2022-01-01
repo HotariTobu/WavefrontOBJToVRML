@@ -8,7 +8,7 @@ namespace WavefrontOBJToVRML
         readonly IEnumerable<Material> Materials;
         readonly IEnumerable<IShape> Children;
 
-        static readonly Point DefaultTranslation = new Point();
+        static readonly Vector DefaultTranslation = default;
 
         public Model(string name, IEnumerable<Material> materials, IEnumerable<IShape> children)
         {
@@ -54,9 +54,10 @@ namespace WavefrontOBJToVRML
 
             lines.Add("Transform {");
 
-            if (!DefaultTranslation.Equals(shape.Translation))
+            Vector translation = shape.Translation.Round();
+            if (!DefaultTranslation.Equals(translation))
             {
-                lines.Add($"\ttranslation {shape.Translation.X} {shape.Translation.Y} {shape.Translation.Z}");
+                lines.Add($"\ttranslation {translation.X} {translation.Y} {translation.Z}");
             }
 
             if (shape.Rotation.Angle != 0)

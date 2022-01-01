@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace WavefrontOBJToVRML
 {
-    internal class Cylinder : IShape
+    internal class Cone : IShape
     {
         public string AppearanceName { get; }
         public Vector Translation { get; }
@@ -12,7 +12,7 @@ namespace WavefrontOBJToVRML
         readonly double Radius;
         readonly double Height;
 
-        public Cylinder(ShapeData shapeData)
+        public Cone(ShapeData shapeData)
         {
             AppearanceName = shapeData.AppearanceName;
             Translation = shapeData.Center;
@@ -26,21 +26,26 @@ namespace WavefrontOBJToVRML
                 }
             }
 
-            Vector circleCenter = default;
             Vector[] points = shapeData.Points.ToArray();
+
+            Vector circleCenter = default;
+            List<int> allIndices = Enumerable.Range(0, points.Length).ToList();
             foreach (var index in indices)
             {
                 circleCenter += points[index];
+                allIndices.Remove(index);
             }
 
             if (indices.Length > 0)
             {
                 circleCenter /= indices.Length;
+                Vector head = points[allIndices.FirstOrDefault()];
 
-                Vector centerVector = circleCenter - Translation;
-                Rotation = Rotation.GetRotation(centerVector);
-                Height = centerVector.Length * 2;
+                Vector axisY = head - circleCenter;
+                Translation = (head + circleCenter) / 2;
+                Rotation = Rotation.GetRotation(axisY);
                 Radius = (circleCenter - points[indices[0]]).Length;
+                Height = axisY.Length;
             }
         }
 
@@ -52,16 +57,16 @@ namespace WavefrontOBJToVRML
                 double height = Height.Round();
                 if (radius == 1 && height == 2)
                 {
-                    return new string[] { "geometry Cylinder {}" };
+                    return new string[] { "geometry Cone {}" };
                 }
 
                 List<string> lines = new List<string>();
 
-                lines.Add("geometry Cylinder {");
+                lines.Add("geometry Cone {");
 
                 if (radius != 1)
                 {
-                    lines.Add($"\tradius {radius}");
+                    lines.Add($"\tbottomRadius {radius}");
                 }
 
                 if (height != 2)
