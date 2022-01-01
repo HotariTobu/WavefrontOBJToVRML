@@ -11,7 +11,7 @@ namespace WavefrontOBJToVRML
             { typeof(Box), new string[]{"Cube", "立方体"}},
             { typeof(Cylinder), new string[]{ "Cylinder", "円柱"}},
             { typeof(Cone), new string[]{ "Cone", "円錐"}},
-            { typeof(Sphere), new string[]{ "Sphere", "球"}},
+            { typeof(Sphere), new string[]{ "sphere", "球"}},
         };
 
         public static Type GetShapeType(string name)
