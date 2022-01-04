@@ -38,7 +38,15 @@ namespace WavefrontOBJToVRML
             X = vector.X;
             Y = vector.Y;
             Z = vector.Z;
-            Angle = angle.Round();
+
+            if (X == 0 && Y == 0 && Z == 0)
+            {
+                Angle = 0;
+            }
+            else
+            {
+                Angle = angle.Round();
+            }
             
             int countNegative(Vector v)
             {

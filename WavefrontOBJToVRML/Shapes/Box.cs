@@ -46,9 +46,12 @@ namespace WavefrontOBJToVRML
 
                 Rotation = Rotation.GetRotation(vectorX, vectorY);
 
-                Size.Width = vectorX.Length * 2;
-                Size.Height = vectorY.Length * 2;
-                Size.Depth = vectorZ.Length * 2;
+                if (Rotation.Angle != 0)
+                {
+                    Size.Width = vectorX.Length * 2;
+                    Size.Height = vectorY.Length * 2;
+                    Size.Depth = vectorZ.Length * 2;
+                }
 
                 Vector nearest(Vector unit, params Vector[] excludeVectors)
                 {
