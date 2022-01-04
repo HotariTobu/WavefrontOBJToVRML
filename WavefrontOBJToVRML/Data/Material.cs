@@ -11,7 +11,8 @@ namespace WavefrontOBJToVRML
 
         readonly string Name;
 
-        static readonly Color DefaultColor = default;
+        static readonly Color DefaultDiffuseColor = new Color { R = 1, G = 1, B = 1 };
+        static readonly Color DefaultSpecularColor = default;
         
         public Material(string name)
         {
@@ -31,12 +32,12 @@ namespace WavefrontOBJToVRML
 
             //lines.Add($"\t\temissiveColor {EmissiveColor}");
 
-            if (!diffuseColor.Equals(DefaultColor))
+            if (!diffuseColor.Equals(DefaultDiffuseColor))
             {
                 lines.Add($"\t\tdiffuseColor {diffuseColor}");
             }
 
-            if (!specularColor.Equals(DefaultColor))
+            if (!specularColor.Equals(DefaultSpecularColor))
             {
                 lines.Add($"\t\tspecularColor {specularColor}");
             }
