@@ -5,11 +5,13 @@ namespace WavefrontOBJToVRML
     internal class Material
     {
         //public string EmissiveColor;
-        public string DiffuseColor;
-        public string SpecularColor;
+        public Color DiffuseColor;
+        public Color SpecularColor;
         public double Transparency;
 
-        string Name;
+        readonly string Name;
+
+        static readonly Color DefaultColor = default;
         
         public Material(string name)
         {
@@ -18,18 +20,30 @@ namespace WavefrontOBJToVRML
 
         public IEnumerable<string> GetMaterialLines()
         {
+            Color diffuseColor = DiffuseColor.Round();
+            Color specularColor = SpecularColor.Round();
+            double transparency = Transparency.Round();
+
             List<string> lines = new List<string>();
 
             lines.Add($"DEF {Name} Appearance {{");
             lines.Add("\tmaterial Material {");
 
             //lines.Add($"\t\temissiveColor {EmissiveColor}");
-            lines.Add($"\t\tdiffuseColor {DiffuseColor}");
-            lines.Add($"\t\tspecularColor {SpecularColor}");
 
-            if (Transparency != 0)
+            if (!diffuseColor.Equals(DefaultColor))
             {
-                lines.Add($"\t\ttransparency {Transparency}");
+                lines.Add($"\t\tdiffuseColor {diffuseColor}");
+            }
+
+            if (!specularColor.Equals(DefaultColor))
+            {
+                lines.Add($"\t\tspecularColor {specularColor}");
+            }
+
+            if (transparency != 0)
+            {
+                lines.Add($"\t\ttransparency {transparency}");
             }
 
             lines.Add("\t}");

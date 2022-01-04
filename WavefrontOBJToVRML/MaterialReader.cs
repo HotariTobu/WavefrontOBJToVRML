@@ -35,10 +35,10 @@ namespace WavefrontOBJToVRML
                         material.EmissiveColor = value;
                         break;*/
                     case "Kd":
-                        material.DiffuseColor = value;
+                        material.DiffuseColor = parse(value);
                         break;
                     case "Ks":
-                        material.SpecularColor = value;
+                        material.SpecularColor = parse(value);
                         break;
                     case "d":
                         {
@@ -52,6 +52,22 @@ namespace WavefrontOBJToVRML
             }
 
             return result;
+
+            Color parse(string value)
+            {
+                string[] tokens = value.Split(' ');
+                if (tokens.Length == 3)
+                {
+                    return new Color
+                    {
+                        R = double.Parse(tokens[0]),
+                        G = double.Parse(tokens[1]),
+                        B = double.Parse(tokens[2]),
+                    };
+                }
+
+                return default;
+            }
         }
     }
 }

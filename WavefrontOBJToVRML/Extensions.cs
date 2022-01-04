@@ -36,5 +36,15 @@ namespace WavefrontOBJToVRML
                 Depth = size.Depth.Round(),
             };
         }
+
+        public static Color Round(this Color color)
+        {
+            return new Color
+            {
+                R = color.R.Round(),
+                G = color.G.Round(),
+                B = color.B.Round(),
+            };
+        }
     }
 }
