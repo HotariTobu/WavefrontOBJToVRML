@@ -65,7 +65,7 @@ namespace WavefrontOBJToVRML
                         nearestVector = vs.ElementAt(skipCount);
                     }
 
-                    double minDistance = unit.Distance(nearestVector);
+                    double minAngle = unit.Angle(nearestVector);
                     foreach (var vector in vs.Skip(skipCount))
                     {
                         if (isExcluded(vector))
@@ -73,11 +73,11 @@ namespace WavefrontOBJToVRML
                             continue;
                         }
 
-                        double distance = unit.Distance(vector);
-                        if (distance < minDistance)
+                        double angle = unit.Angle(vector);
+                        if (angle < minAngle)
                         {
                             nearestVector = vector;
-                            minDistance = distance;
+                            minAngle = angle;
                         }
                     }
                     return nearestVector;
