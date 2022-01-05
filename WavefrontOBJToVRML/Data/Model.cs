@@ -34,7 +34,7 @@ namespace WavefrontOBJToVRML
 
             foreach (var shape in Children)
             {
-                lines.AddRange(GetShapeLines(shape).PrependEach("\t\t\t\t"));
+                lines.AddRange(GetShapeLines(shape).PrependEach("\t\t"));
             }
 
             lines.Add("\t]");
