@@ -4,7 +4,8 @@ namespace WavefrontOBJToVRML
 {
     internal class Model
     {
-        readonly string Name;
+        public string Name { get; }
+
         readonly IEnumerable<Material> Materials;
         readonly IEnumerable<IShape> Children;
 
@@ -21,26 +22,20 @@ namespace WavefrontOBJToVRML
         {
             List<string> lines = new List<string>();
 
-            lines.Add("Switch {");
-            lines.Add("\tchoice [");
-
             foreach (var material in Materials)
             {
-                lines.AddRange(material.GetMaterialLines().PrependEach("\t\t"));
+                lines.AddRange(material.GetMaterialLines());
             }
 
             lines.Add("");
-            lines.Add($"\t\t########## {Name} {new string('#', 50 - Name.Length)}");
-            lines.Add($"\t\tDEF {Name} Group {{");
-            lines.Add("\t\t\tchildren [");
+            lines.Add($"########## {Name} {new string('#', 50 - Name.Length)}");
+            lines.Add($"DEF {Name} Group {{");
+            lines.Add("\tchildren [");
 
             foreach (var shape in Children)
             {
                 lines.AddRange(GetShapeLines(shape).PrependEach("\t\t\t\t"));
             }
-
-            lines.Add("\t\t\t]");
-            lines.Add("\t\t}");
 
             lines.Add("\t]");
             lines.Add("}");
