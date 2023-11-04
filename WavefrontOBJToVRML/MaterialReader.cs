@@ -48,6 +48,9 @@ namespace WavefrontOBJToVRML
                             }
                         }
                         break;
+                    case "map_Kd":
+                        material.
+                        break;
                 }
             }
 
