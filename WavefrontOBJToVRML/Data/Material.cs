@@ -8,6 +8,7 @@ namespace WavefrontOBJToVRML
         public Color DiffuseColor;
         public Color SpecularColor;
         public double Transparency;
+        public string? TexturePath = null;
 
         readonly string Name;
 
@@ -29,6 +30,7 @@ namespace WavefrontOBJToVRML
 
             lines.Add("Shape {");
             lines.Add($"\tappearance DEF {Name} Appearance {{");
+
             lines.Add("\t\tmaterial Material {");
 
             //lines.Add($"\t\temissiveColor {EmissiveColor}");
@@ -49,6 +51,14 @@ namespace WavefrontOBJToVRML
             }
 
             lines.Add("\t\t}");
+
+            if (!string.IsNullOrWhiteSpace(TexturePath))
+            {
+                lines.Add("\t\ttexture ImageTexture {");
+                lines.Add($"\t\t\turl \"{TexturePath}\"");
+                lines.Add("\t\t}");
+            }
+
             lines.Add("\t}");
             lines.Add("}");
 
